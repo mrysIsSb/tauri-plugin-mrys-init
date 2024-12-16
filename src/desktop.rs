@@ -1,13 +1,15 @@
 use crate::models::*;
-use crate::AppInitState;
-use serde::de::DeserializeOwned;
+use crate::{AppInitState, Config};
 use std::sync::Mutex;
-use tauri::{plugin::PluginApi, AppHandle, Listener, Manager, Runtime, WebviewUrl};
+use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
 
-pub fn init<R: Runtime, C: DeserializeOwned>(
+pub fn init<R: Runtime>(
     app: &AppHandle<R>,
-    _api: PluginApi<R, C>,
+    api: PluginApi<R, Config>,
 ) -> crate::Result<MrysInit<R>> {
+    let config = api.config();
+    println!("mrys-init init: {:?}", config);
+    app.manage(Mutex::new(AppInitState(false, config.clone())));
     Ok(MrysInit(app.clone()))
 }
 
@@ -27,5 +29,12 @@ impl<R: Runtime> MrysInit<R> {
         app_init_state.0 = true;
         drop(app_init_state);
         Ok(())
+    }
+
+    //是否初始化
+    pub fn is_init(&self) -> crate::Result<bool> {
+        let app_init_state = self.0.state::<Mutex<AppInitState>>();
+        let app_init_state = app_init_state.lock().unwrap();
+        Ok(app_init_state.0)
     }
 }

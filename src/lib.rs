@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::sync::Mutex;
 use tauri::{
     plugin::{Builder, TauriPlugin},
-    Manager, Runtime, WebviewUrl,
+    Manager, Runtime,
 };
 
 pub use models::*;
@@ -44,8 +44,8 @@ pub struct Config {
 pub struct AppInitState(bool, Config);
 
 /// Initializes the plugin.
-pub fn init<R: Runtime>() -> TauriPlugin<R> {
-    Builder::new("mrys-init")
+pub fn init<R: Runtime>() -> TauriPlugin<R, Config> {
+    Builder::<R, Config>::new("mrys-init")
         .invoke_handler(tauri::generate_handler![commands::ping])
         .setup(|app, api| {
             #[cfg(mobile)]
