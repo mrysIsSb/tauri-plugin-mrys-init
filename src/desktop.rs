@@ -6,10 +6,11 @@ use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
 pub fn init<R: Runtime>(
     app: &AppHandle<R>,
     api: PluginApi<R, Config>,
+    init_state: bool,
 ) -> crate::Result<MrysInit<R>> {
     let config = api.config();
     println!("mrys-init init: {:?}", config);
-    app.manage(Mutex::new(AppInitState(false, config.clone())));
+    app.manage(Mutex::new(AppInitState(init_state, config.clone())));
     Ok(MrysInit(app.clone()))
 }
 

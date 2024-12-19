@@ -44,14 +44,14 @@ pub struct Config {
 pub struct AppInitState(bool, Config);
 
 /// Initializes the plugin.
-pub fn init<R: Runtime>() -> TauriPlugin<R, Config> {
+pub fn init<R: Runtime>(init_state: bool) -> TauriPlugin<R, Config> {
     Builder::<R, Config>::new("mrys-init")
         .invoke_handler(tauri::generate_handler![commands::ping])
         .setup(|app, api| {
             #[cfg(mobile)]
             let mrys_init = mobile::init(app, api)?;
             #[cfg(desktop)]
-            let mrys_init = desktop::init(app, api)?;
+            let mrys_init = desktop::init(app, api, init_state)?;
             app.manage(mrys_init);
             Ok(())
         })
