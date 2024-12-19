@@ -47,7 +47,7 @@ pub struct AppInitState(bool, Config);
 pub fn init<R: Runtime>(init_state: bool) -> TauriPlugin<R, Config> {
     Builder::<R, Config>::new("mrys-init")
         .invoke_handler(tauri::generate_handler![commands::ping])
-        .setup(|app, api| {
+        .setup(move |app, api| {
             #[cfg(mobile)]
             let mrys_init = mobile::init(app, api)?;
             #[cfg(desktop)]
